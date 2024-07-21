@@ -41,7 +41,7 @@ public class Pessoa implements Serializable {
     private String sobrenome;
 
     @Min(value = 10, message = "Idade mínima: 10 anos")
-    @Max(value = 100, message = "Idade máxima: 100 anos")//AQUI
+    @Max(value = 100, message = "Idade máxima: 100 anos") // AQUI
     private Integer idade;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -83,21 +83,6 @@ public class Pessoa implements Serializable {
 
     @SuppressWarnings("deprecation")
     public Integer calcularIdade() {
-        // Date data = new Date();
-
-        /*
-         * Integer anoNascimento = (getDataNascimento().getYear() + 1900);
-         * idade = (data.getYear() + 1900) - anoNascimento;
-         * if ((data.getMonth() + 1) < (getDataNascimento().getMonth()+1)) {
-         * idade--;
-         * } else if ((data.getMonth() + 1) == (getDataNascimento().getMonth()+1) &&
-         * data.getDate() < dataNascimento.getDate()) {
-         * idade--;
-         * }else if((getDataNascimento().getMonth()+1) == (data.getMonth() + 1) &&
-         * getDataNascimento().getDate() == data.getDate()){
-         * idade++;
-         * }
-         */
         LocalDate dataNascimento = getDataNascimento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate dataLocal = LocalDate.now();
 
