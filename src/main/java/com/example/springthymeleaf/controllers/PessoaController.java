@@ -11,6 +11,7 @@ import org.springframework.validation.ObjectError;
 
 import com.example.springthymeleaf.model.Pessoa;
 import com.example.springthymeleaf.model.Telefone;
+import com.example.springthymeleaf.model.enums.Cargo;
 import com.example.springthymeleaf.reposiories.PessoaRepository;
 import com.example.springthymeleaf.reposiories.TelefoneRepository;
 
@@ -39,6 +40,7 @@ public class PessoaController {
         modelAndView.addObject("listaPessoasFront", listaPessoas);
 
         modelAndView.addObject("objPessoa", new Pessoa());
+        modelAndView.addObject("cargos", Cargo.values());
 
         return modelAndView;
     }
@@ -51,16 +53,17 @@ public class PessoaController {
             // VOLTAR PRA TELA COM OS DADOS DA PESSOA:
             ModelAndView modelAndViewErro = new ModelAndView("cadastro/cadastropessoa.html");
             modelAndViewErro.addObject("objPessoa", pessoa);
-            List<String> listaMensagensErro = new ArrayList<>();
-
+            
             // PRA LISTA DE PESSOAS CONTINUAR NA TELA:
             List<Pessoa> listaPessoas = pessoaRepository.findAll();
             modelAndViewErro.addObject("listaPessoasFront", listaPessoas);
-
+            
+            List<String> listaMensagensErro = new ArrayList<>();
             for (ObjectError objectError : bindingResult.getAllErrors()) {
                 listaMensagensErro.add(objectError.getDefaultMessage()); // Mensagem que vem do @NotNull
             }
             modelAndViewErro.addObject("msgPraIterar", listaMensagensErro);
+
             return modelAndViewErro;
         }
 
@@ -70,6 +73,7 @@ public class PessoaController {
         String msgRetornadaPraTela = pessoa.getId() == null ? "Usuário salvo com sucesso!"
                 : "Usuário atualizado com sucesso!";
 
+        pessoa.setIdade(pessoa.calcularIdade());
         pessoaRepository.save(pessoa);
 
         modelAndView.addObject("msgPraIterar", msgRetornadaPraTela);
@@ -78,6 +82,9 @@ public class PessoaController {
         modelAndView.addObject("listaPessoasFront", listaPessoas);
 
         modelAndView.addObject("objPessoa", new Pessoa());
+        modelAndView.addObject("cargos", Cargo.values());
+        
+        
         return modelAndView;
 
     }
@@ -202,5 +209,6 @@ public class PessoaController {
 
         return modelAndView;
     }
+
 
 }

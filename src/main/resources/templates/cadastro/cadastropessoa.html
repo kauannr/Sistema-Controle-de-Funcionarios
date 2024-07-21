@@ -107,42 +107,70 @@
         
     <div class="row" sec:authorize="hasRole('ROLE_MANAGER')" >    
         <form action="salvarpessoa" id="formaPessoa" method="post" th:object="${objPessoa}">
-            <label class="input-field col s6">ID</label>
+        <div class="input-field col s12">
+            <label for="id" class="active">ID</label>
             <input  name="id" th:field="*{id}" readonly="readonly" class="validade">
-            
-            <label class="input-field col s6">Nome</label>
+        </div>
+
+        <div class="input-field col s6">
+            <label for="nome" class="active">Nome</label>
             <input placeholder="  Informe o nome da pessoa" name="nome" th:field="*{nome}" class="validade">
-        
-            <label class="input-field col s6">Sobrenome</label>
+        </div>
+
+        <div class="input-field col s6">
+            <label for="sobrenome" class="active">Sobrenome</label>
             <input placeholder="  Informe o sobrenome da pessoa" name="sobrenome" th:field="*{sobrenome}" class="validade">
+        </div>
 
-            <label class="input-field col s6"> Idade</label>
-            <input placeholder="  Informe a idade da pessoa" name="idade" th:field="*{idade}" class="validade">
+        <div class="input-field col s6">
+            <label for="cargo" class="active">Cargo</label>
+            <select class="browser-default" th:field="*{cargo}">
+                <option value="" enable selected>Escolha um cargo</option>
+              <option th:each = "c : ${cargos}" th:value = "${c}" th:text="${c.nome}"></option>
+            </select>
+        </div>
 
-            <label class="input-field col s6"> Cargo</label>
-            <input placeholder="  Informe o cargo da pessoa" name="cargo" th:field="*{cargo}" class="validade">
-
-            <label class="input-field col s6"> Salário</label>
+        <div class="input-field col s12">
+            <label for="salario" class="acive"> Salário</label>
             <input placeholder="  Informe o salário da pessoa" name="salario" type="number" th:field="*{salario}" class="validade">
+        </div>
 
-            <label class="input-field col s6" for="cep" >Cep</label>
+        <div class="input-field col s6">
+            <label for="dataNascimento" class="active">Data de Nascimento</label>
+            <input placeholder="Informe a data" type="date" id="dataNascimento" th:field="*{dataNascimento}">
+        </div>
+
+
+        <div class="input-field col s6">
+            <label for="cep" class="active">Cep</label>
             <input placeholder="  Informe o cep da pessoa" name="cep" th:field="*{cep}" class="validate" id="cep">
+        </div>
 
-            <label class="input-field col s6" for="rua" >Rua</label>
+        <div class="input-field col s6">
+            <label for="rua" class="active">Rua</label>
             <input name="rua" th:field="*{rua}" class="validate" id="rua">
+        </div>
 
-            <label class="input-field col s6" for="bairro" >Bairro</label>
+        <div class="input-field col s6">
+            <label for="bairro" class="active">Bairro</label>
             <input name="bairro" th:field="*{bairro}" class="validate" id="bairro">
+        </div>
 
-            <label class="input-field col s6" for="cidade" >Cidade</label>
+        <div class="input-field col s6">
+            <label for="cidade" class="active">Cidade</label>
             <input name="cidade" th:field="*{cidade}" class="validate" id="cidade">
+        </div>
 
-            <label class="input-field col s6" for="uf" >Uf</label>
+        <div class="input-field col s6">
+            <label for="uf" class="active" >UF</label>
             <input name="uf" th:field="*{uf}" class="validate" id="uf">
+        </div>
 
-            <label class="input-field col s6" for="ibge" >IBGE</label>
+        <div class="input-field col s6">
+            <label for="ibge" class="active">IBGE</label>
             <input name="ibge" th:field="*{ibge}" class="validate" id="ibge">
-
+        </div>
+        
             <label class="input-field col s6">Sexo</label>
             <select class="browser-default" th:field="*{sexo}">
               <option value="NI" enable selected>[Selecione uma Opção]</option>
@@ -216,6 +244,6 @@
             src="/materialize/js/materialize.min.js"></script>
         <script type="text/javascript"
             src="/materialize/js/materialize.js"></script>
-
+        
     </body>
 </html>

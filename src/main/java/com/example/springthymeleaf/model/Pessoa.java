@@ -1,8 +1,16 @@
 package com.example.springthymeleaf.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.Year;
+import java.time.ZoneId;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -10,6 +18,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -30,13 +40,18 @@ public class Pessoa implements Serializable {
     @NotEmpty(message = "Sobrenome não pode estar vazio")
     private String sobrenome;
 
-    @Max(value = 100, message = "Idade inválida")
-    @NotNull(message = "Preencha a idade")
+    @Min(value = 10, message = "Idade mínima: 10 anos")
+    @Max(value = 100, message = "Idade máxima: 100 anos")//AQUI
     private Integer idade;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
+    private Date dataNascimento;
+
     @NotNull(message = "Preencha o cargo corretamente")
-    @NotEmpty(message = "cargo não pode estar vazio")
+    @NotEmpty(message = "Preencha o cargo do funcionário")
     private String cargo;
+
     @Min(value = 1200, message = "Salario minimo: 1200")
     @NotNull(message = "Preencha o salário")
     private Double salario;
@@ -60,10 +75,35 @@ public class Pessoa implements Serializable {
     public Pessoa(String nome, String sobrenome, Integer idade) {
         this.nome = nome;
         this.sobrenome = sobrenome;
-        this.idade = idade;
+        this.idade = calcularIdade();
     }
 
     public Pessoa() {
+    }
+
+    @SuppressWarnings("deprecation")
+    public Integer calcularIdade() {
+        // Date data = new Date();
+
+        /*
+         * Integer anoNascimento = (getDataNascimento().getYear() + 1900);
+         * idade = (data.getYear() + 1900) - anoNascimento;
+         * if ((data.getMonth() + 1) < (getDataNascimento().getMonth()+1)) {
+         * idade--;
+         * } else if ((data.getMonth() + 1) == (getDataNascimento().getMonth()+1) &&
+         * data.getDate() < dataNascimento.getDate()) {
+         * idade--;
+         * }else if((getDataNascimento().getMonth()+1) == (data.getMonth() + 1) &&
+         * getDataNascimento().getDate() == data.getDate()){
+         * idade++;
+         * }
+         */
+        LocalDate dataNascimento = getDataNascimento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate dataLocal = LocalDate.now();
+
+        Integer anos = Period.between(dataNascimento, dataLocal).getYears();
+
+        return anos;
     }
 
     public Long getId() {
@@ -166,6 +206,14 @@ public class Pessoa implements Serializable {
         this.sexo = sexo;
     }
 
+    public Double getSalario() {
+        return salario;
+    }
+
+    public void setSalario(Double salario) {
+        this.salario = salario;
+    }
+
     public String getCargo() {
         return cargo;
     }
@@ -174,12 +222,12 @@ public class Pessoa implements Serializable {
         this.cargo = cargo;
     }
 
-    public Double getSalario() {
-        return salario;
+    public Date getDataNascimento() {
+        return dataNascimento;
     }
 
-    public void setSalario(Double salario) {
-        this.salario = salario;
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 
     @Override

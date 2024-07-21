@@ -23,7 +23,7 @@ class SpringthymeleafApplicationTests {
 
 		Usuario usuario = new Usuario(username, password);
 
-		usuario.addRole("ROLE_MANAGER");
+		usuario.addRole("ROLE_USER");
 
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -38,7 +38,8 @@ class SpringthymeleafApplicationTests {
 
 	@Test
 	void inserirUsuario() {
-		criptografarSenhaESalvar("teste", "teste123");
+		criptografarSenhaESalvar("18", "teste18");
+		
 	}
 
 	@Test
