@@ -94,6 +94,21 @@
 
     </script>
 
+    <style type="text/css">
+        table{
+        width: 100%;
+    }
+    table td, table th{
+        border: 1px solid green;
+    }
+
+    table th{
+        background: hsl(180, 30%, 50%);
+    }
+
+    </style>
+    
+
     </head>
     
     <body>
@@ -106,7 +121,8 @@
         </br>
         
     <div class="row" sec:authorize="hasRole('ROLE_MANAGER')" >    
-        <form action="salvarpessoa" id="formaPessoa" method="post" th:object="${objPessoa}">
+        <form action="salvarpessoa" id="formaPessoa" method="post" th:object="${objPessoa}"
+        enctype="multipart/form-data">
         <div class="input-field col s12">
             <label for="id" class="active">ID</label>
             <input  name="id" th:field="*{id}" readonly="readonly" class="validade">
@@ -180,8 +196,6 @@
             </select>
         </br>
 
-
-
             <input class="waves-effect waves-light btn" type="submit" value="Salvar">
         </form>
     </div>
@@ -214,7 +228,7 @@
         </div>
 
         <table class="striped">
-            <tr th:each="pessoa : ${listaPessoasFront}">
+            <tr th:each="pessoa : ${listaPessoasFront.content}">
                 <td th:text="${pessoa.id}"></td>
 
                 <td> <a th:href="@{/telefones/{idPessoa}( idPessoa = ${pessoa.id})}" > <span th:text="${pessoa.nome}"></span></a></td>
@@ -238,6 +252,25 @@
                 </tr>
             </thead>
         </table>
+
+        <div class="row" style="margin-top: 30px;">
+            <center>
+            
+                <span th:if="${listaPessoasFront.hasPrevious()}">
+                    <a th:href="@{/pessoaspag(page=${listaPessoasFront.number-1}, size=${listaPessoasFront.size})}">Anterior</a>
+                </span>
+            
+               <th:block th:each="i: ${#numbers.sequence(0, listaPessoasFront.totalPages - 1)}"> 
+                       <a th:href="@{/pessoaspag(page=${i}, size=${listaPessoasFront.size})}">[[ ${i} + 1 ]]</a>
+               </th:block>
+               
+               <span th:if="${listaPessoasFront.hasNext()}">
+                    <a th:href="@{/pessoaspag(page=${listaPessoasFront.number+1}, size=${listaPessoasFront.size})}">Próximo</a>
+                </span>
+               
+            </center>
+           </div>
+        
 
         <!--JavaScript at end of body for optimized loading-->
         <script type="text/javascript"

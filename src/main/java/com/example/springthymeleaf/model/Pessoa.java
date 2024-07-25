@@ -3,9 +3,7 @@ package com.example.springthymeleaf.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.Year;
 import java.time.ZoneId;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +44,7 @@ public class Pessoa implements Serializable {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.DATE)
+    @NotNull(message = "Insira a data de nascimento do funcionário")
     private Date dataNascimento;
 
     @NotNull(message = "Preencha o cargo corretamente")
@@ -69,6 +68,7 @@ public class Pessoa implements Serializable {
     private String ibge;
     private String sexo;
 
+
     @OneToMany(mappedBy = "pessoa", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Telefone> listaTelefones = new ArrayList<>();
 
@@ -81,7 +81,6 @@ public class Pessoa implements Serializable {
     public Pessoa() {
     }
 
-    @SuppressWarnings("deprecation")
     public Integer calcularIdade() {
         LocalDate dataNascimento = getDataNascimento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate dataLocal = LocalDate.now();

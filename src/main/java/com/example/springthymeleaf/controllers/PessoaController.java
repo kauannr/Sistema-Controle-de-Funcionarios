@@ -1,10 +1,16 @@
 package com.example.springthymeleaf.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -21,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -33,11 +40,11 @@ public class PessoaController {
     private TelefoneRepository telefoneRepository;
 
     @RequestMapping(value = "**/teladeinicio", method = RequestMethod.GET)
-    public ModelAndView index() {
+    public ModelAndView telaDeInicio() {
         ModelAndView modelAndView = new ModelAndView("cadastro/cadastropessoa.html");
 
-        List<Pessoa> listaPessoas = pessoaRepository.findAll();
-        modelAndView.addObject("listaPessoasFront", listaPessoas);
+        modelAndView.addObject("listaPessoasFront",
+                pessoaRepository.findAll(PageRequest.of(0, 2, Sort.by("id"))));
 
         modelAndView.addObject("objPessoa", new Pessoa());
         modelAndView.addObject("cargos", Cargo.values());
@@ -45,19 +52,32 @@ public class PessoaController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "**/salvarpessoa", method = RequestMethod.POST)
-    public ModelAndView salvar(@Valid Pessoa pessoa, BindingResult bindingResult) {
+    @RequestMapping(value = "/pessoaspag", method = RequestMethod.GET)
+    public ModelAndView carregarPessoaPorPaginacao(@PageableDefault(size = 2) Pageable pageable, ModelAndView modelAndView) {
+
+        Page<Pessoa> pagePessoa = pessoaRepository.findAll(pageable);
+        modelAndView.addObject("listaPessoasFront", pagePessoa);
+
+        modelAndView.addObject("objPessoa", new Pessoa());
+        modelAndView.setViewName("cadastro/cadastropessoa.html");
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "**/salvarpessoa", method = RequestMethod.POST, consumes = "multipart/form-data")
+    public ModelAndView salvar(@Valid Pessoa pessoa, BindingResult bindingResult, @RequestParam MultipartFile file)
+            throws IOException {
 
         // PARA AS MENSAGENS DE ERRO DOS ATRIBUTOS:
         if (bindingResult.hasErrors()) {
             // VOLTAR PRA TELA COM OS DADOS DA PESSOA:
             ModelAndView modelAndViewErro = new ModelAndView("cadastro/cadastropessoa.html");
             modelAndViewErro.addObject("objPessoa", pessoa);
-            
+
             // PRA LISTA DE PESSOAS CONTINUAR NA TELA:
-            List<Pessoa> listaPessoas = pessoaRepository.findAll();
-            modelAndViewErro.addObject("listaPessoasFront", listaPessoas);
-            
+            modelAndViewErro.addObject("listaPessoasFront",
+                    pessoaRepository.findAll(PageRequest.of(0, 2, Sort.by("id"))).getContent());
+
             List<String> listaMensagensErro = new ArrayList<>();
             for (ObjectError objectError : bindingResult.getAllErrors()) {
                 listaMensagensErro.add(objectError.getDefaultMessage()); // Mensagem que vem do @NotNull
@@ -78,13 +98,12 @@ public class PessoaController {
 
         modelAndView.addObject("msgPraIterar", msgRetornadaPraTela);
 
-        List<Pessoa> listaPessoas = pessoaRepository.findAll();
-        modelAndView.addObject("listaPessoasFront", listaPessoas);
+        modelAndView.addObject("listaPessoasFront",
+                pessoaRepository.findAll(PageRequest.of(0, 2, Sort.by("id"))).getContent());
 
         modelAndView.addObject("objPessoa", new Pessoa());
         modelAndView.addObject("cargos", Cargo.values());
-        
-        
+
         return modelAndView;
 
     }
@@ -94,8 +113,8 @@ public class PessoaController {
 
         ModelAndView modelAndView = new ModelAndView("cadastro/cadastropessoa");
 
-        List<Pessoa> listaPessoas = pessoaRepository.findAll();
-        modelAndView.addObject("listaPessoasFront", listaPessoas);
+        modelAndView.addObject("listaPessoasFront",
+                pessoaRepository.findAll(PageRequest.of(0, 2, Sort.by("id"))).getContent());
         modelAndView.addObject("objPessoa", new Pessoa());
         return modelAndView;
     }
@@ -119,8 +138,8 @@ public class PessoaController {
         ModelAndView modelAndView = new ModelAndView("cadastro/cadastropessoa");
 
         // adiciono a lista completa sem a pessoa deletada
-        List<Pessoa> listaPessoas = pessoaRepository.findAll();
-        modelAndView.addObject("listaPessoasFront", listaPessoas);
+        modelAndView.addObject("listaPessoasFront",
+                pessoaRepository.findAll(PageRequest.of(0, 2, Sort.by("id"))).getContent());
 
         // pessoa vazia pro formulário de inicio
         modelAndView.addObject("objPessoa", new Pessoa());
@@ -137,10 +156,8 @@ public class PessoaController {
         // Se colocar o sexo na pesquisa, chama o consultaPorSexo
         if (nome.equalsIgnoreCase("MASCULINO") || nome.equalsIgnoreCase("FEMININO")) {
             listaPessoas = pessoaRepository.consultarPorSexo(nome.toLowerCase().trim());
-        } 
-        else if (!nome.isEmpty()) {
+        } else if (!nome.isEmpty()) {
             listaPessoas = pessoaRepository.consultarPornNome(nome.toLowerCase().trim());
-
         }
 
         // Se selecionar a idade
@@ -209,6 +226,5 @@ public class PessoaController {
 
         return modelAndView;
     }
-
 
 }
